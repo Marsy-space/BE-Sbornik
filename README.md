@@ -47,8 +47,8 @@ Backend обеспечивает:
 
 ###   Диаграмма вариантов использования
 
-![Use Case Diagram]
-* в разработке *
+Use Case Diagram
+Link: [https://github.com/Marsy-space/BE-Sbornik/blob/main/uml/UseCase-Sbornik-Retseptov.drawio]
 
 ##   Схема базы данных (ER-диаграмма)
 ![ER]
