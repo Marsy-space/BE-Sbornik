@@ -13,7 +13,6 @@ Environment
 Database (PostgreSQL)
 *.sqlite3
 *.db
-*.sql
 *.dump
 *.backup
 pgdata/
