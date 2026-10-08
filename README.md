@@ -51,8 +51,9 @@ Use Case Diagram
 Link: [https://github.com/Marsy-space/BE-Sbornik/blob/main/uml/UseCase-Sbornik-Retseptov.drawio]
 
 ##   Схема базы данных (ER-диаграмма)
-![ER]
-*в разработке *
+ER Diagram
+<img width="1249" height="440" alt="ER-diagram" src="https://github.com/user-attachments/assets/f1a3aef8-d646-43cc-8e0d-1e521be57ecf" />
+
 
 Основные сущности:
 - users — пользователи (id, email, password_hash, role, created_at);
