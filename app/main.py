@@ -1,17 +1,39 @@
 from fastapi import FastAPI
-from app.db import Base, engine
-from app.api import auth
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
 from app.db import Base, engine, SessionLocal
-from app.models.user import User, Role
+from app.models.user import Role
+from app.api import auth, recipes, upload, interactive
 from app.core.logging import get_logger
 
 logger = get_logger()
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Сборник рецептов API")
+app = FastAPI(
+    title="Сборник рецептов API",
+    description="Backend-сервис для платформы рецептов (аутентификация, рецепты, медиа, интерактив)",
+    version="1.0.0"
+)
 
+# Настройка CORS для работы с фронтендом
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # На продакшене указать конкретный адрес фронтенда
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Раздача загруженных статических файлов (картинок)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Подключение роутеров
 app.include_router(auth.router)
+app.include_router(recipes.router)
+app.include_router(upload.router)
+app.include_router(interactive.router)
 
 @app.get("/")
 def root():
