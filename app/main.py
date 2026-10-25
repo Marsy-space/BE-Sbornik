@@ -3,6 +3,7 @@ from app.db import Base, engine, SessionLocal
 from app.models import User, Role, Recipe, RecipeAccess
 from app.core.logging import get_logger
 from app.api import auth, recipes
+from fastapi.middleware.cors import CORSMiddleware
 
 logger = get_logger()
 
@@ -27,6 +28,17 @@ def seed_roles():
 seed_roles()
 
 app = FastAPI(title="Сборник рецептов API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth.router)
 app.include_router(recipes.router)
