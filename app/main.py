@@ -3,6 +3,7 @@ from app.db import Base, engine, SessionLocal
 from app.models import User, Role, Recipe, RecipeAccess
 from app.core.logging import get_logger
 from app.api import auth, recipes
+from app.api import favorites, admin
 from fastapi.middleware.cors import CORSMiddleware
 
 logger = get_logger()
@@ -42,6 +43,8 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(recipes.router)
+app.include_router(favorites.router)
+app.include_router(admin.router)
 
 
 @app.get("/")
