@@ -1,5 +1,5 @@
 Python
-pycache/
+__pycache__/
 *.py[cod]
 *.egg-info/
 .venv/
@@ -34,3 +34,4 @@ postgres-data/
 OS
 .DS_Store
 Thumbs.db
+data/
