@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from app.db import Base
+from datetime import datetime
+
 
 class Recipe(Base):
     __tablename__ = "recipes"
@@ -15,6 +16,7 @@ class Recipe(Base):
     is_private = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
     author = relationship("User", backref="recipes")
     access_list = relationship(
