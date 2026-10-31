@@ -1,14 +1,16 @@
 from fastapi import FastAPI
-from app.db import Base, engine, SessionLocal
-from app.models import User, Role, Recipe, RecipeAccess
-from app.core.logging import get_logger
-from app.api import auth, recipes
-from app.api import favorites, admin
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
+from app.db import Base, engine, SessionLocal
+from app.models import User, Role, Recipe, RecipeAccess  # noqa: F401  (нужно, чтобы создались все таблицы)
+from app.core.logging import get_logger
+from app.api import auth, recipes, favorites, admin, upload, interactive
 
 logger = get_logger()
 
 Base.metadata.create_all(bind=engine)
+
 
 def seed_roles():
     db = SessionLocal()
@@ -26,7 +28,12 @@ def seed_roles():
 
 
 seed_roles()
-app = FastAPI(title="Сборник рецептов API")
+
+app = FastAPI(
+    title="Сборник рецептов API",
+    description="Backend-сервис для платформы рецептов (аутентификация, рецепты, медиа, избранное, отзывы, список покупок)",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,10 +46,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Раздача загруженных картинок (папка static/uploads создаётся в app/api/upload.py)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.include_router(auth.router)
 app.include_router(recipes.router)
 app.include_router(favorites.router)
 app.include_router(admin.router)
+app.include_router(upload.router)
+app.include_router(interactive.router)
 
 
 @app.get("/")
