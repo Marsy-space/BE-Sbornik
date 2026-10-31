@@ -10,7 +10,6 @@ logger = get_logger()
 
 Base.metadata.create_all(bind=engine)
 
-
 def seed_roles():
     db = SessionLocal()
     try:
@@ -27,7 +26,6 @@ def seed_roles():
 
 
 seed_roles()
-
 app = FastAPI(title="Сборник рецептов API")
 
 app.add_middleware(

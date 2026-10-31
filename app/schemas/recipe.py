@@ -9,14 +9,12 @@ class RecipeCreate(BaseModel):
     category_id: Optional[int] = None
     is_private: bool = False
 
-
 class RecipeUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=2, max_length=255)
     short_description: Optional[str] = None
     cooking_time_minutes: Optional[int] = Field(default=None, ge=0)
     category_id: Optional[int] = None
     is_private: Optional[bool] = None
-
 
 class RecipeOut(BaseModel):
     id: int
@@ -29,7 +27,6 @@ class RecipeOut(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class RecipeAccessOut(BaseModel):
     recipe_id: int
