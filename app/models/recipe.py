@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db import Base
 
-
 class Recipe(Base):
     __tablename__ = "recipes"
 

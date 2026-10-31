@@ -9,7 +9,6 @@ from app.crud import recipe_access as crud_access
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
-
 @router.post("/", response_model=RecipeOut, status_code=status.HTTP_201_CREATED)
 def create_recipe(
     data: RecipeCreate,
