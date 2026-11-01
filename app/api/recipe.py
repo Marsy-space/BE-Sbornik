@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from app.db import get_db
 from app.models.recipe import Recipe, RecipeIngredient, Step, Category, Favorite
-from app.schemas.recipe import RecipeCreate, RecipeOut
+from app.schemas.recipe import RecipeCreate, RecipeOut, RecipeUpdate
 from app.core.security import get_current_user
 from app.models.user import User
 
@@ -78,3 +78,24 @@ def delete_recipe(
     
     db.delete(recipe)
     db.commit()
+
+@router.put("/{recipe_id}", response_model=RecipeOut)
+def update_recipe(
+    recipe_id: int,
+    data: RecipeUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Рецепт не найден")
+    if recipe.author_id != current_user.id and current_user.role_id != 3:
+        raise HTTPException(status_code=403, detail="Вы не можете редактировать чужой рецепт")
+    
+    update_data = data.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(recipe, key, value)
+        
+    db.commit()
+    db.refresh(recipe)
+    return recipe
