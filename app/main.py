@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.db import Base, engine, SessionLocal
-from app.models import User, Role, Recipe, RecipeAccess  # noqa: F401
-from app.models.recipe import Favorite, Review, ShoppingListItem, RecipeIngredient, Category, Ingredient
+from app.models import User, Role, Recipe, RecipeAccess, Category, Ingredient, Favorite, Review
 from app.core.logging import get_logger
 from app.api import auth, recipes, favorites, admin, upload, interactive, dictionaries
 

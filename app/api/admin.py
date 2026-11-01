@@ -6,7 +6,7 @@ from app.core.security import get_current_admin
 from app.models.user import User
 from app.schemas.user import UserOut
 from app.models.recipe import Recipe
-from app.models.favorite import Favorite
+from app.models.recipe import Favorite
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 

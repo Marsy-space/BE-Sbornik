@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -30,10 +31,21 @@ def get_recipes(
     return query.offset(offset).limit(limit).all()
 
 @router.get("/{recipe_id}", response_model=RecipeOut)
-def get_recipe(recipe_id: int, db: Session = Depends(get_db)):
+def get_recipe(
+    recipe_id: int, 
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user) # Если токена нет, вернет None (нужно сделать зависимость необязательной)
+):
     recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
     if not recipe:
         raise HTTPException(status_code=404, detail="Рецепт не найден")
+        
+    if recipe.is_private:
+        # Если рецепт приватный, пускаем только автора (или тех, кому разрешено)
+        if not current_user or recipe.author_id != current_user.id:
+            # Тут можно добавить проверку RecipeAccess, если будем делать "друзей"
+            raise HTTPException(status_code=403, detail="Это приватный рецепт")
+            
     return recipe
 
 @router.post("/", response_model=RecipeOut, status_code=status.HTTP_201_CREATED)
@@ -55,9 +67,12 @@ def create_recipe(
     db.add(recipe)
     db.flush()
 
+    added_ingredients = set()
     for ing in data.ingredients:
-        db.add(RecipeIngredient(recipe_id=recipe.id, ingredient_id=ing.ingredient_id, amount=ing.amount))
-
+        if ing.ingredient_id not in added_ingredients:
+            db.add(RecipeIngredient(recipe_id=recipe.id, ingredient_id=ing.ingredient_id, amount=ing.amount))
+            added_ingredients.add(ing.ingredient_id)
+    
     for st in data.steps:
         db.add(Step(recipe_id=recipe.id, step_number=st.step_number, description=st.description, image_url=st.image_url))
 
@@ -93,9 +108,39 @@ def update_recipe(
     if recipe.author_id != current_user.id and current_user.role_id != 3:
         raise HTTPException(status_code=403, detail="Вы не можете редактировать чужой рецепт")
     
+    # Обновляем простые поля
     update_data = data.dict(exclude_unset=True)
+    
+    steps_data = update_data.pop("steps", None)
+    ingredients_data = update_data.pop("ingredients", None)
+
     for key, value in update_data.items():
         setattr(recipe, key, value)
+        
+    # Обновляем шаги (если они переданы)
+    if steps_data is not None:
+        db.query(Step).filter(Step.recipe_id == recipe.id).delete()
+        for st in steps_data:
+            db.add(Step(
+                recipe_id=recipe.id, 
+                step_number=st["step_number"], 
+                description=st["description"], 
+                image_url=st.get("image_url")
+            ))
+
+    # Обновляем ингредиенты (если они переданы)
+    if ingredients_data is not None:
+        db.query(RecipeIngredient).filter(RecipeIngredient.recipe_id == recipe.id).delete()
+        
+        added_ingredients = set()
+        for ing in ingredients_data:
+            if ing["ingredient_id"] not in added_ingredients:
+                db.add(RecipeIngredient(
+                    recipe_id=recipe.id, 
+                    ingredient_id=ing["ingredient_id"], 
+                    amount=ing["amount"]
+                ))
+                added_ingredients.add(ing["ingredient_id"])
         
     db.commit()
     db.refresh(recipe)

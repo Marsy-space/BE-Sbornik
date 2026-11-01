@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.core.security import get_current_user
 from app.models.user import User
-from app.models.favorite import Favorite
+from app.models.recipe import Favorite
 from app.models.recipe import Recipe
 from app.schemas.recipe import RecipeOut
 
@@ -35,5 +35,7 @@ def remove_from_favorites(recipe_id: int, db: Session = Depends(get_db), user: U
 @router.get("/", response_model=list[RecipeOut])
 def get_my_favorites(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     favorites = db.query(Favorite).filter(Favorite.user_id == user.id).all()
+    if not favorites:
+        return []  # Защита от ошибки с пустым списком
     recipe_ids = [f.recipe_id for f in favorites]
     return db.query(Recipe).filter(Recipe.id.in_(recipe_ids)).all()
