@@ -92,7 +92,7 @@ ER Diagram
 git clone https://github.com/Marsy-space/BE-Sbornik.git
 cd BE-Sbornik
 docker-compose up --build
-
+```
 
 ## Документация API (Swagger / OpenAPI)
 
@@ -102,3 +102,4 @@ docker-compose up --build
 1. Запустите бэкенд-сервер локально командой:
    ```bash
    uvicorn app.main:app --reload
+   ```
