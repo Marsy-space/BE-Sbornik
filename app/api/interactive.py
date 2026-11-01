@@ -10,7 +10,7 @@ from app.models.user import User
 
 router = APIRouter(tags=["interactive"])
 
-# --- Избранное ---
+# Избранное
 @router.post("/recipes/{recipe_id}/favorite", status_code=status.HTTP_201_CREATED)
 def add_favorite(recipe_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     fav = db.query(Favorite).filter(Favorite.user_id == current_user.id, Favorite.recipe_id == recipe_id).first()
@@ -29,31 +29,45 @@ def remove_favorite(recipe_id: int, db: Session = Depends(get_db), current_user:
     db.commit()
     return {"message": "Удалено из избранного"}
 
-# --- Отзывы ---
+# Отзывы
 @router.post("/recipes/{recipe_id}/reviews", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
 def add_review(recipe_id: int, data: ReviewCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Рецепт не найден")
+        
     review = Review(recipe_id=recipe_id, user_id=current_user.id, rating=data.rating, comment=data.comment)
     db.add(review)
     db.commit()
     db.refresh(review)
     return review
 
-# --- Поиск по ингредиентам ("Что приготовить") ---
+# Поиск по ингредиентам с исключением аллергенов
 @router.post("/recipes/search-by-ingredients", response_model=List[RecipeOut])
 def search_by_ingredients(payload: SearchByIngredientsRequest, db: Session = Depends(get_db)):
     if not payload.ingredient_ids:
         return []
     
-    matching_recipes = (
-        db.query(Recipe)
-        .join(RecipeIngredient)
-        .filter(RecipeIngredient.ingredient_id.in_(payload.ingredient_ids))
-        .group_by(Recipe.id)
-        .all()
+    # 1. Ищем рецепты, в которых есть все/любой из нужных ингредиентов
+    query = db.query(Recipe).join(RecipeIngredient).filter(
+        RecipeIngredient.ingredient_id.in_(payload.ingredient_ids)
     )
+    
+    # 2. Если переданы аллергены, исключаем рецепты, где они встречаются
+    if payload.exclude_ingredient_ids:
+        # Подзапрос: получаем ID рецептов, которые содержат запрещенные ингредиенты
+        excluded_recipes_subquery = db.query(RecipeIngredient.recipe_id).filter(
+            RecipeIngredient.ingredient_id.in_(payload.exclude_ingredient_ids)
+        )
+        # Отфильтровываем эти рецепты из общего поиска
+        query = query.filter(Recipe.id.notin_(excluded_recipes_subquery))
+    
+    # 3. Группируем, чтобы избежать дубликатов при JOIN
+    matching_recipes = query.group_by(Recipe.id).all()
+    
     return matching_recipes
 
-# --- Список покупок ---
+# Список покупок
 @router.post("/shopping-list/add-recipe/{recipe_id}")
 def add_recipe_to_shopping_list(recipe_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
