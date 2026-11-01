@@ -12,14 +12,15 @@ router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 @router.get("/", response_model=List[RecipeOut])
 def get_recipes(
-    limit: int = 10,
-    offset: int = 0,
+    limit: int = 10, # Сколько отдавать за раз
+    offset: int = 0, # Сколько пропустить
     category_id: Optional[int] = None,
     max_cooking_time: Optional[int] = None,
     search: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(Recipe)
+    query = db.query(Recipe).filter(Recipe.is_private == False) # Показываем только публичные
+    
     if category_id:
         query = query.filter(Recipe.category_id == category_id)
     if max_cooking_time:
