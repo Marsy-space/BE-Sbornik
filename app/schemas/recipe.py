@@ -65,6 +65,8 @@ class RecipeUpdate(BaseModel):
     category_id: Optional[int] = None
     image_url: Optional[str] = None
     is_private: Optional[bool] = None
+    ingredients: Optional[List[RecipeIngredientInput]] = None
+    steps: Optional[List[StepInput]] = None
 
 class RecipeOut(BaseModel):
     id: int

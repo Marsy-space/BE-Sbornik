@@ -52,6 +52,7 @@ class Recipe(Base):
     ingredients = relationship("RecipeIngredient", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="recipe", cascade="all, delete-orphan")
     access_list = relationship("RecipeAccess", back_populates="recipe", cascade="all, delete-orphan")
+    favorites = relationship("Favorite", cascade="all, delete-orphan")
 
 class Favorite(Base):
     __tablename__ = "favorites"

@@ -10,25 +10,6 @@ from app.models.user import User
 
 router = APIRouter(tags=["interactive"])
 
-# Избранное
-@router.post("/recipes/{recipe_id}/favorite", status_code=status.HTTP_201_CREATED)
-def add_favorite(recipe_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    fav = db.query(Favorite).filter(Favorite.user_id == current_user.id, Favorite.recipe_id == recipe_id).first()
-    if fav:
-        return {"message": "Рецепт уже в избранном"}
-    db.add(Favorite(user_id=current_user.id, recipe_id=recipe_id))
-    db.commit()
-    return {"message": "Рецепт добавлен в избранное"}
-
-@router.delete("/recipes/{recipe_id}/favorite")
-def remove_favorite(recipe_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    fav = db.query(Favorite).filter(Favorite.user_id == current_user.id, Favorite.recipe_id == recipe_id).first()
-    if not fav:
-        raise HTTPException(status_code=404, detail="Рецепт не найден в избранном")
-    db.delete(fav)
-    db.commit()
-    return {"message": "Удалено из избранного"}
-
 # Отзывы
 @router.post("/recipes/{recipe_id}/reviews", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
 def add_review(recipe_id: int, data: ReviewCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
