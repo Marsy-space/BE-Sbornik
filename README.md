@@ -88,7 +88,7 @@ ER Diagram
 
 ##  Запуск
 
-`bash
+```bash
 git clone https://github.com/Marsy-space/BE-Sbornik.git
 cd BE-Sbornik
 docker-compose up --build
