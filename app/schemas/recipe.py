@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 
-# --- Ingredient Schemas ---
+# Ingredient Schemas
 class IngredientBase(BaseModel):
     name: str
     unit: str = "гр"
@@ -25,7 +25,7 @@ class RecipeIngredientOut(BaseModel):
     class Config:
         from_attributes = True
 
-# --- Step Schemas ---
+# Step Schemas
 class StepInput(BaseModel):
     step_number: int
     description: str
@@ -36,7 +36,7 @@ class StepOut(StepInput):
     class Config:
         from_attributes = True
 
-# --- Category Schemas ---
+# Category Schemas
 class CategoryOut(BaseModel):
     id: int
     name: str
@@ -44,7 +44,7 @@ class CategoryOut(BaseModel):
     class Config:
         from_attributes = True
 
-# --- Recipe Schemas ---
+# Recipe Schemas
 class RecipeCreate(BaseModel):
     title: str
     description: Optional[str] = None
@@ -82,7 +82,7 @@ class RecipeOut(BaseModel):
     class Config:
         from_attributes = True
 
-
+# Review Schemas
 class ReviewCreate(BaseModel):
     rating: int = Field(ge=1, le=5)
     comment: Optional[str] = None
@@ -97,11 +97,12 @@ class ReviewOut(BaseModel):
     class Config:
         from_attributes = True
 
-
+# Search Schemas
 class SearchByIngredientsRequest(BaseModel):
-    ingredient_ids: List[int]
+    ingredient_ids: List[int]  # Ингредиенты, которые должны быть в рецепте
+    exclude_ingredient_ids: List[int] = []  # Ингредиенты, которых быть НЕ должно (аллергены)
 
-
+# Shopping List Schemas
 class ShoppingItemOut(BaseModel):
     id: int
     ingredient_name: str
