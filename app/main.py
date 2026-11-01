@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db import Base, engine, SessionLocal
 from app.models import User, Role, Recipe, RecipeAccess  # noqa: F401
-from app.models.recipe import Favorite, Review, ShoppingListItem, RecipeIngredient
+from app.models.recipe import Favorite, Review, ShoppingListItem, RecipeIngredient, Category, Ingredient
 from app.core.logging import get_logger
 from app.api import auth, recipes, favorites, admin, upload, interactive, dictionaries
 
@@ -27,6 +27,29 @@ def seed_roles():
         db.close()
 
 seed_roles()
+
+def seed_dictionaries():
+    db = SessionLocal()
+    try:
+        if db.query(Category).count() == 0:
+            db.add_all([
+                Category(name="Супы", description="Первые блюда"),
+                Category(name="Салаты", description="Холодные закуски"),
+                Category(name="Десерты", description="Сладкое")
+            ])
+        if db.query(Ingredient).count() == 0:
+            db.add_all([
+                Ingredient(name="Картофель", unit="гр"),
+                Ingredient(name="Морковь", unit="гр"),
+                Ingredient(name="Соль", unit="гр"),
+                Ingredient(name="Свекла", unit="гр"),
+                Ingredient(name="Мясо", unit="гр")
+            ])
+        db.commit()
+    finally:
+        db.close()
+
+seed_dictionaries()
 
 app = FastAPI(
     title="Сборник рецептов API",
