@@ -85,9 +85,20 @@ ER Diagram
 | POST | /api/favorites/{id} | Добавить в избранное |
 | GET | /api/admin/users | Список пользователей (Admin) |
 
+
 ##  Запуск
 
 `bash
 git clone https://github.com/Marsy-space/BE-Sbornik.git
 cd BE-Sbornik
 docker-compose up --build
+
+
+## Документация API (Swagger / OpenAPI)
+
+В проект встроен автоматический генератор интерактивной документации на базе FastAPI (OpenAPI / Swagger Specification).
+
+Как использовать документацию:
+1. Запустите бэкенд-сервер локально командой:
+   ```bash
+   uvicorn app.main:app --reload
