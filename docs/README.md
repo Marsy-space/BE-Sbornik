@@ -12,10 +12,10 @@
 
 ## Документы в общем хранилище (Google Drive)
 Некоторые организационные документы хранятся отдельно:
-* [Устав проекта](ССЫЛКА_НА_ГУГЛ_ДИСК)
-* [Требования заказчика](ССЫЛКА_НА_ГУГЛ_ДИСК)
-* [План управления рисками](ССЫЛКА_НА_ГУГЛ_ДИСК)
-* [План управления коммуникациями](ССЫЛКА_НА_ГУГЛ_ДИСК)
+* [Устав проекта](https://docs.google.com/document/d/1cGSIELBVWTTvEU8l1eTNoEA5slD3u9wF/edit?usp=drive_link&ouid=115371571433998916218&rtpof=true&sd=true)
+* [Требования заказчика](https://docs.google.com/document/d/1obblD1ZvKTK5kkWHtGililvIf7d0gjuZ/edit?usp=drive_link&ouid=115371571433998916218&rtpof=true&sd=true)
+* [План управления рисками](https://docs.google.com/document/d/1D608YVCqMCkpxJ9uPHHlDu0gF1sGLkmD/edit?usp=drive_link&ouid=115371571433998916218&rtpof=true&sd=true)
+* [План управления коммуникациями](https://docs.google.com/document/d/1FgM6arac9JscAvCs67gK5qwSBvU33tb7/edit?usp=drive_link&ouid=115371571433998916218&rtpof=true&sd=true)
 
 ## Команда проекта
 * Морозова Ксения (Product Owner, Technical Writer, BE)
