@@ -1,4 +1,4 @@
-# Recipe box— Backend
+# Recipe box — Backend
 
 ##  Описание проекта
 
@@ -14,14 +14,11 @@ Backend обеспечивает:
 
 ##   Стек технологий
 
- Категория | Технология |
- Язык: TypeScript
- Фреймворк: React
- Стили: Tailwind CSS
- UI-компоненты: shadcn/ui
- Backend: Python (FastAPI)
- Архитектура: Monolith
- Контейнеризация: Docker, Docker Compose
+* Python 3.11 / FastAPI
+* PostgreSQL / SQLAlchemy
+* JWT (JSON Web Tokens) для авторизации
+* Docker / Docker Compose
+* WebSocket для чата
 
 ##  Роли пользователей и варианты использования
 
@@ -51,11 +48,9 @@ Use Case Diagram
 
 <img width="787" height="991" alt="UseCase-Sbornik-Retseptov" src="https://github.com/user-attachments/assets/f3327ca8-09d5-499a-b464-5f73413386f0" />
 
-
 ##   Схема базы данных (ER-диаграмма)
 ER Diagram
 <img width="1249" height="440" alt="ER-diagram" src="https://github.com/user-attachments/assets/f1a3aef8-d646-43cc-8e0d-1e521be57ecf" />
-
 
 Основные сущности:
 - users — пользователи (id, email, password_hash, role, created_at);
@@ -64,7 +59,6 @@ ER Diagram
 - recipe_ingredients — связь рецептов и ингредиентов (recipe_id, ingredient_id, amount);
 - favorites — избранное (user_id, recipe_id);
 - categories — категории блюд.
-
 
 ##  API
 
@@ -85,21 +79,45 @@ ER Diagram
 | POST | /api/favorites/{id} | Добавить в избранное |
 | GET | /api/admin/users | Список пользователей (Admin) |
 
-
 ##  Запуск
 
-```bash
-git clone https://github.com/Marsy-space/BE-Sbornik.git
-cd BE-Sbornik
-docker-compose up --build
-```
+Всё приложение (БД и бэкенд) поднимается одной командой через Docker.
 
-## Документация API (Swagger / OpenAPI)
-
-В проект встроен автоматический генератор интерактивной документации на базе FastAPI (OpenAPI / Swagger Specification).
-
-Как использовать документацию:
-1. Запустите бэкенд-сервер локально командой:
+1. Склонируйте репозиторий:
    ```bash
-   uvicorn app.main:app --reload
+   git clone https://github.com/Marsy-space/BE-Sbornik.git
+   cd BE-Sbornik
    ```
+
+2. Перейдите в папку deploy и создайте файл .env из примера:
+
+   ```bash
+   cd deploy
+   cp .env.example .env
+   ```
+
+3. Запустите контейнеры:
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+4. Проверьте работу: откройте в браузере http://localhost:8000/docs (Swagger UI).
+
+Остановить проект: `docker compose down`.
+
+## Документация
+
+Вся подробная техническая документация (архитектура, база данных, правила разработки) находится в папке [/docs](docs/).
+
+## Запуск тестов
+
+   ```bash
+   pytest tests/ -v
+   ```
+
+## Команда проекта
+* Морозова Ксения (Product Owner, Technical Writer, BE)
+* Стахейко Полина (Тим-лид, Testing, FE)
+* Борозна Диана (DevOps, FE)
+* Шугар Валерия (UI, BE)
