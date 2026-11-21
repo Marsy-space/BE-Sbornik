@@ -1,0 +1,23 @@
+@startuml c4-container
+!include <C4/C4_Container>
+title ИС «Сборник рецептов» — уровень 2: контейнеры
+
+AddElementTag("planned", $borderStyle=DashedLine(), $legendText="появится в следующих релизах")
+
+Person(user, "Пользователь", "Guest, User, Admin")
+
+System_Boundary(sys, "ИС «Сборник рецептов»") {
+  Container(spa, "Веб-клиент", "TypeScript, React", "Интерфейс пользователя; исполняется в браузере")
+  Container(web, "Веб-сервер", "nginx", "Раздаёт сборку клиента, проксирует /api на сервер")
+  Container(api, "API-сервер", "Python 3.11, FastAPI", "Бизнес-логика: рецепты, пользователи, избранное, чат")
+  ContainerDb(db, "База данных", "PostgreSQL 17", "Пользователи, рецепты, ингредиенты, избранное, история")
+}
+
+Rel(user, web, "Открывает приложение", "HTTPS")
+Rel(web, spa, "Доставляет в браузер", "HTTPS")
+Rel(spa, web, "Вызывает API", "JSON/HTTPS")
+Rel(web, api, "Проксирует /api", "HTTP")
+Rel(api, db, "Читает и пишет", "SQL")
+
+SHOW_LEGEND()
+@enduml
