@@ -1,23 +1,35 @@
+import uuid
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.core.security import hash_password
 from app.core.logging import get_logger
+from app.core.email import send_verification_email
 
 logger = get_logger()
 
 def create_user(db: Session, data: UserCreate) -> User:
     logger.info(f"Регистрация нового пользователя: {data.email}")
+    verification_token = uuid.uuid4().hex
     user = User(
         email=data.email,
         password_hash=hash_password(data.password),
         username=data.username,
-        role_id=2,  # User
+        role_id=2, # User
+        is_verified=False,
+        verify_token=verification_token
     )
     db.add(user)
     db.commit()
     db.refresh(user)
     logger.debug(f"Пользователь создан: id={user.id}")
+    # Пробуем отправить письмо с токеном
+    try:
+        send_verification_email(user.email, verification_token)
+    except Exception as e:
+        logger.error(f"Не удалось отправить письмо: {e}")
+    # Для теста выводим ссылку в консоль:
+    print(f"ССЫЛКА ДЛЯ ПОДТВЕРЖДЕНИЯ: http://localhost:5173/verify-email?token={verification_token}")
     return user
 
 def get_user(db: Session, user_id: int) -> User | None:

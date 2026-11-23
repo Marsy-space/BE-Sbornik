@@ -24,5 +24,8 @@ class User(Base):
     accepted_rules_at = Column(DateTime)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_activity = Column(DateTime)
+    is_verified = Column(Boolean, default=False) # Статус подтверждения email
+    verify_token = Column(String(255), nullable=True) # Токен для подтверждения
+    avatar_url = Column(String(500), nullable=True) # Ссылка на аватарку
 
     role = relationship("Role", back_populates="users")

@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from typing import Optional
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -16,9 +16,14 @@ class UserOut(BaseModel):
     username: str
     role_id: int
     is_blocked: bool
+    is_verified: bool
+    avatar_url: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+class EmailUpdate(BaseModel):
+    new_email: EmailStr
