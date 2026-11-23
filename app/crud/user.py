@@ -28,8 +28,6 @@ def create_user(db: Session, data: UserCreate) -> User:
         send_verification_email(user.email, verification_token)
     except Exception as e:
         logger.error(f"Не удалось отправить письмо: {e}")
-    # Для теста выводим ссылку в консоль:
-    print(f"ССЫЛКА ДЛЯ ПОДТВЕРЖДЕНИЯ: http://localhost:5173/verify-email?token={verification_token}")
     return user
 
 def get_user(db: Session, user_id: int) -> User | None:
