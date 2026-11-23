@@ -58,8 +58,6 @@ def update_email(data: EmailUpdate, db: Session = Depends(get_db), current_user:
     db.commit()
     
     send_verification_email(data.new_email, current_user.verify_token)
-    # Для теста выводим ссылку в консоль
-    print(f"ССЫЛКА ДЛЯ ПОДТВЕРЖДЕНИЯ (Смена Email): http://localhost:5173/verify-email?token={current_user.verify_token}")
     return {"message": "Email обновлен. Подтвердите новый адрес."}
 
 @router.post("/me/avatar")
