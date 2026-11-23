@@ -9,6 +9,8 @@ from app.schemas.recipe import RecipeCreate, RecipeOut, RecipeUpdate
 from app.core.security import get_current_user
 from app.models.user import User
 
+RECIPE_NOT_FOUND = "Рецепт не найден"
+
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 @router.get("/", response_model=List[RecipeOut])
@@ -38,7 +40,7 @@ def get_recipe(
 ):
     recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
     if not recipe:
-        raise HTTPException(status_code=404, detail="Рецепт не найден")
+        raise HTTPException(status_code=404, detail=RECIPE_NOT_FOUND)
         
     if recipe.is_private:
         # Если рецепт приватный, пускаем только автора (или тех, кому разрешено)
@@ -88,7 +90,7 @@ def delete_recipe(
 ):
     recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
     if not recipe:
-        raise HTTPException(status_code=404, detail="Рецепт не найден")
+        raise HTTPException(status_code=404, detail=RECIPE_NOT_FOUND)
     if recipe.author_id != current_user.id and current_user.role_id != 3:
         raise HTTPException(status_code=403, detail="Недостаточно прав для удаления этого рецепта")
     
@@ -104,7 +106,7 @@ def update_recipe(
 ):
     recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
     if not recipe:
-        raise HTTPException(status_code=404, detail="Рецепт не найден")
+        raise HTTPException(status_code=404, detail=RECIPE_NOT_FOUND)
     if recipe.author_id != current_user.id and current_user.role_id != 3:
         raise HTTPException(status_code=403, detail="Вы не можете редактировать чужой рецепт")
     

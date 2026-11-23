@@ -1,7 +1,11 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Float, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db import Base
+
+FK_RECIPES_ID = "recipes.id"
+FK_USERS_ID = "users.id"
+CASCADE_ALL_DELETE = "all, delete-orphan"
 
 class Category(Base):
     __tablename__ = "categories"
@@ -18,7 +22,7 @@ class Ingredient(Base):
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
-    recipe_id = Column(Integer, ForeignKey("recipes.id", ondelete="CASCADE"), primary_key=True)
+    recipe_id = Column(Integer, ForeignKey(FK_RECIPES_ID, ondelete="CASCADE"), primary_key=True)
     ingredient_id = Column(Integer, ForeignKey("ingredients.id", ondelete="CASCADE"), primary_key=True)
     amount = Column(Float, nullable=False)
     ingredient = relationship("Ingredient")
@@ -26,7 +30,7 @@ class RecipeIngredient(Base):
 class Step(Base):
     __tablename__ = "steps"
     id = Column(Integer, primary_key=True, index=True)
-    recipe_id = Column(Integer, ForeignKey("recipes.id", ondelete="CASCADE"), nullable=False)
+    recipe_id = Column(Integer, ForeignKey(FK_RECIPES_ID, ondelete="CASCADE"), nullable=False)
     step_number = Column(Integer, nullable=False)
     description = Column(Text, nullable=False)
     image_url = Column(String(500), nullable=True)
@@ -40,31 +44,31 @@ class Recipe(Base):
     cooking_time = Column(Integer, nullable=False)
     servings = Column(Integer, default=1)
     calories = Column(Integer, nullable=True)
-    author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    author_id = Column(Integer, ForeignKey(FK_USERS_ID, ondelete="CASCADE"), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
     image_url = Column(String(500), nullable=True)
     is_private = Column(Boolean, default=False, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     author = relationship("User")
     category = relationship("Category", back_populates="recipes")
-    steps = relationship("Step", back_populates="recipe", cascade="all, delete-orphan", order_by="Step.step_number")
-    ingredients = relationship("RecipeIngredient", cascade="all, delete-orphan")
-    reviews = relationship("Review", back_populates="recipe", cascade="all, delete-orphan")
-    access_list = relationship("RecipeAccess", back_populates="recipe", cascade="all, delete-orphan")
-    favorites = relationship("Favorite", cascade="all, delete-orphan")
+    steps = relationship("Step", back_populates="recipe", cascade=CASCADE_ALL_DELETE, order_by="Step.step_number")
+    ingredients = relationship("RecipeIngredient", cascade=CASCADE_ALL_DELETE)
+    reviews = relationship("Review", back_populates="recipe", cascade=CASCADE_ALL_DELETE)
+    access_list = relationship("RecipeAccess", back_populates="recipe", cascade=CASCADE_ALL_DELETE)
+    favorites = relationship("Favorite", cascade=CASCADE_ALL_DELETE)
 
 class Favorite(Base):
     __tablename__ = "favorites"
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    recipe_id = Column(Integer, ForeignKey("recipes.id", ondelete="CASCADE"), primary_key=True)
+    user_id = Column(Integer, ForeignKey(FK_USERS_ID, ondelete="CASCADE"), primary_key=True)
+    recipe_id = Column(Integer, ForeignKey(FK_RECIPES_ID, ondelete="CASCADE"), primary_key=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Review(Base):
     __tablename__ = "reviews"
     id = Column(Integer, primary_key=True, index=True)
-    recipe_id = Column(Integer, ForeignKey("recipes.id", ondelete="CASCADE"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    recipe_id = Column(Integer, ForeignKey(FK_RECIPES_ID, ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey(FK_USERS_ID, ondelete="CASCADE"), nullable=False)
     rating = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -74,7 +78,7 @@ class Review(Base):
 class ShoppingListItem(Base):
     __tablename__ = "shopping_list"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey(FK_USERS_ID, ondelete="CASCADE"), nullable=False)
     ingredient_name = Column(String(100), nullable=False)
     amount = Column(Float, nullable=False)
     unit = Column(String(20), nullable=False)
