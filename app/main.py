@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from app.db import Base, engine, SessionLocal
 from app.models import User, Role, Recipe, RecipeAccess, Category, Ingredient, Favorite, Review
 from app.core.logging import get_logger
-from app.api import auth, recipes, favorites, admin, upload, interactive, dictionaries
+from app.api import auth, recipes, favorites, admin, upload, interactive, dictionaries, logs
 
 logger = get_logger()
 
@@ -73,6 +73,7 @@ app.include_router(admin.router)
 app.include_router(upload.router)
 app.include_router(interactive.router)
 app.include_router(dictionaries.router)
+app.include_router(logs.router)
 
 @app.get("/")
 def root():
